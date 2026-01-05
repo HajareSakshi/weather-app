@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Weather App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ================= SMOOTH BACKGROUND SLIDESHOW ================= */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: bgFade 25s infinite;
+  z-index: -3;
+}
+
+/* 🌄 High quality images */
+.bg1 {
+  background-image: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=70");
+}
+
+.bg2 {
+  background-image: url("https://images.unsplash.com/photo-1501973801540-537f08ccae7b");
+  animation-delay: 6.25s;
+}
+
+.bg3 {
+  background-image: url("https://images.unsplash.com/photo-1592210454359-9043f067919b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8d2VhdGhlcnxlbnwwfHwwfHx8MA%3D%3D");
+  animation-delay: 12.25s;
+}
+
+.bg4 {
+  background-image: url("https://live.staticflickr.com/5529/12205212124_abda6a0a2c_b.jpg");
+  animation-delay: 18.25s;
+}
+
+
+/* 🔥 PERFECT slow crossfade */
+@keyframes bgFade {
+  0%   { opacity: 0; }
+  5%   { opacity: 1; }  
+  35%  { opacity: 1; }  
+  40%  { opacity: 0; }  
+  100% { opacity: 0; }
+}
+
+/* White overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  z-index: -1;
+}
+
+/* ================= WEATHER CARD ================= */
+
+.weather-card {
+  background: #ffffff;
+  width: 360px;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 102, 204, 0.3);
+  text-align: center;
+}
+
+h1 {
+  color: #0066cc;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #b3d9ff;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #0066cc;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #004d99;
+}
+
+.weather-info {
+  margin-top: 20px;
+  display: none;
+}
+
+.temp {
+  font-size: 48px;
+  color: #0066cc;
+}
+
+.details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.details div {
+  width: 48%;
+  background: #f2f9ff;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.error {
+  color: red;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background layers -->
+<div class="bg bg1"></div>
+<div class="bg bg2"></div>
+<div class="bg bg3"></div>
+<div class="bg bg4"></div>
+<div class="overlay"></div>
+
+<!-- Weather App -->
+<div class="weather-card">
+      <h1>🌤️ Weather App</h1>
+
+  <div class="search-box">
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="getWeather()">Search</button>
+  </div>
+
+  <div class="weather-info" id="weatherInfo">
+    <div class="temp" id="temperature">--°C</div>
+    <div id="condition"></div>
+
+    <div class="details">
+      <div>💧 <span id="humidity">--%</span></div>
+      <div>🌬 <span id="wind">-- km/h</span></div>
+    </div>
+  </div>
+
+  <div class="error" id="error"></div>
+</div>
+
+<script>
+const API_KEY = "057db9d9ba2948599fe51645260501";
+
+function getWeather() {
+  const city = document.getElementById("city").value;
+  const info = document.getElementById("weatherInfo");
+  const error = document.getElementById("error");
+
+  if (!city) {
+    error.innerText = "Please enter a city name";
+    return;
+  }
+
+  fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        error.innerText = "City not found";
+        info.style.display = "none";
+        return;
+      }
+
+      error.innerText = "";
+      document.getElementById("temperature").innerText = data.current.temp_c + "°C";
+      document.getElementById("condition").innerText = data.current.condition.text;
+      document.getElementById("humidity").innerText = data.current.humidity + "%";
+      document.getElementById("wind").innerText = data.current.wind_kph + " km/h";
+      info.style.display = "block";
+    });
+}
+</script>
+
+</body>
+</html>
